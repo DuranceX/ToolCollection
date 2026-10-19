@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import ThemeToggle from "../shared/components/ThemeToggle.vue";
+import BrandMark from "../shared/components/BrandMark.vue";
 import NoteCard from "./components/NoteCard.vue";
 import NoteEditor from "./components/NoteEditor.vue";
 import TagChip from "./components/TagChip.vue";
@@ -134,7 +135,7 @@ onUnmounted(() => document.removeEventListener("keydown", onKeydown));
   <header class="topbar">
     <div class="topbar-inner app-topbar">
       <a class="brand" href="../../index.html">
-        <span class="brand-mark" aria-hidden="true">TC</span>
+        <BrandMark />
         <span class="brand-name">Tool Collection</span>
       </a>
       <span class="topbar-sep" aria-hidden="true">/</span>

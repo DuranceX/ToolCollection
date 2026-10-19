@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ThemeToggle from "../shared/components/ThemeToggle.vue";
+import BrandMark from "../shared/components/BrandMark.vue";
 import ItemCard from "./ItemCard.vue";
 import { tools, links } from "./data";
 </script>
@@ -8,7 +9,7 @@ import { tools, links } from "./data";
   <header class="topbar">
     <div class="container topbar-inner">
       <a class="brand" href="index.html">
-        <span class="brand-mark" aria-hidden="true">TC</span>
+        <BrandMark />
         <span>Tool Collection</span>
       </a>
       <div class="topbar-spacer"></div>

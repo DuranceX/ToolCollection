@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import ThemeToggle from "../shared/components/ThemeToggle.vue";
+import BrandMark from "../shared/components/BrandMark.vue";
 import TabBar from "./components/TabBar.vue";
 import EditView from "./components/EditView.vue";
 import CompareView from "./components/CompareView.vue";
@@ -205,7 +206,7 @@ const canCompare = computed(() => tabs.value.length >= 2);
   <header class="topbar">
     <div class="topbar-inner app-topbar">
       <a class="brand" href="../../index.html">
-        <span class="brand-mark" aria-hidden="true">TC</span>
+        <BrandMark />
         <span class="brand-name">Tool Collection</span>
       </a>
       <span class="topbar-sep" aria-hidden="true">/</span>

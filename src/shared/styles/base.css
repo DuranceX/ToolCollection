@@ -239,12 +239,15 @@ pre {
   place-items: center;
   width: 26px;
   height: 26px;
+  flex: none;
   border-radius: 7px;
   background: var(--accent);
   color: var(--on-accent);
-  font-size: 13px;
-  font-weight: 700;
-  font-family: var(--font-mono);
+}
+
+.brand-mark svg {
+  width: 17px;
+  height: 17px;
 }
 
 .topbar-spacer {
