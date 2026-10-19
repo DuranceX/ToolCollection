@@ -1,0 +1,1075 @@
+/* ==========================================================================
+   便签集
+   ========================================================================== */
+
+#app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-topbar {
+  padding: 0 var(--sp-4);
+}
+
+/* ---------- 工具栏 ---------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  row-gap: var(--sp-2);
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+  min-width: var(--sp-2);
+}
+
+.toolbar-div {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex: none;
+}
+
+.search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 190px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 9px;
+  width: 14px;
+  height: 14px;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+/* 必须带 input 标签选择器：base.css 里是 `input.control { padding: 0 8px }`
+   （特异性 0,1,1），只写 .search-input 会被它覆盖，图标就和 placeholder 重叠了 */
+input.search-input {
+  max-width: none;
+  width: 100%;
+  padding: 0 26px 0 30px;
+  cursor: text;
+}
+
+.search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-clear {
+  position: absolute;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.search-clear:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.search-clear svg {
+  width: 11px;
+  height: 11px;
+}
+
+.note-stats {
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.dim {
+  color: var(--text-faint);
+}
+
+/* ---------- 存储说明条 ---------- */
+.notice {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  padding: 7px var(--sp-4);
+  background: var(--bg-sunken);
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.notice svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  color: var(--text-faint);
+}
+
+.notice strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.notice.is-error {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.notice.is-error svg {
+  color: var(--danger);
+}
+
+.notice-spacer {
+  flex: 1;
+  min-width: var(--sp-3);
+}
+
+.save-state {
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.save-state.is-saved {
+  color: var(--success);
+}
+
+/* ---------- 画板 ---------- */
+.board {
+  /* 卡片统一高度，网格才整齐好扫视；内容超出的在卡片里截断 */
+  --note-h: 200px;
+
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-auto-rows: var(--note-h);
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  align-content: start;
+  min-height: 0;
+}
+
+.board-empty {
+  grid-column: 1 / -1;
+  padding: var(--sp-6) var(--sp-3);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.9;
+  pointer-events: none;
+}
+
+.board-empty p {
+  margin: 0;
+}
+
+.board-empty code {
+  font-size: 12.5px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-sunken);
+}
+
+/* 新建卡片 */
+.note-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: var(--note-h);
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-faint);
+  background: transparent;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition),
+    background-color var(--transition);
+}
+
+.note-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.note-add svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ---------- 便签卡片 ---------- */
+/*
+ * 便签统一用中性纸面，颜色的表达交给标签。
+ * --note-* 三个变量保留：卡片和弹窗里的引用（代码块底色、引用条等）都基于它们，
+ * 换主题只改这一处。
+ */
+.note,
+.editor {
+  --note-bg: var(--bg-elev);
+  --note-edge: var(--border);
+  --note-accent: var(--accent);
+}
+
+.note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* 固定高度：便签墙靠整齐的网格才好扫视，内容多的截断，点开弹窗看全文 */
+  height: var(--note-h);
+  background: var(--note-bg);
+  border: 1px solid var(--note-edge);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow var(--transition),
+    transform var(--transition),
+    border-color var(--transition);
+}
+
+.note:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+/* 聚焦时（键盘操作）给出明确指示 */
+.note:focus-within {
+  border-color: var(--accent);
+}
+
+/* 置顶标记：顶部一条强调色细边，比角标干净且不挡内容 */
+.note.is-pinned {
+  border-top-color: var(--accent);
+  box-shadow:
+    inset 0 2px 0 0 var(--accent),
+    var(--shadow-sm);
+}
+
+.note.is-pinned:hover {
+  box-shadow:
+    inset 0 2px 0 0 var(--accent),
+    var(--shadow);
+}
+
+.note-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  /* hidden 而非 auto：卡片里不出现滚动条，看全文请点开 */
+  overflow: hidden;
+  padding: var(--sp-3) var(--sp-3) 0;
+  cursor: pointer;
+  font-size: 13.5px;
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 内容超出时底部渐隐，暗示「还有更多」。
+   够宽才能让被切断的那半行淡出，而不是留下一道硬切口 */
+.note-body::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 30px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--note-bg) 72%, transparent) 45%,
+    var(--note-bg)
+  );
+  pointer-events: none;
+}
+
+.note-empty-text {
+  color: var(--text-faint);
+  font-size: 13px;
+}
+
+/* 底部操作条 */
+.note-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 5px 6px;
+  border-top: 1px solid var(--note-edge);
+}
+
+.note-time {
+  flex: 1;
+  padding-left: 5px;
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+}
+
+.note-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 5px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-faint);
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.note-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.note-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.note-btn.is-on {
+  color: var(--accent);
+}
+
+.note-btn.is-danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.note-btn.is-primary {
+  padding: 0 10px;
+  color: var(--on-accent);
+  background: var(--accent);
+}
+
+.note-btn.is-primary:hover {
+  background: var(--accent-hover);
+  color: var(--on-accent);
+}
+
+.confirm-text {
+  font-size: 11.5px;
+  color: var(--danger);
+  white-space: nowrap;
+}
+
+/* ---------- 编辑弹窗 ---------- */
+.editor {
+  width: min(860px, calc(100vw - 2 * var(--sp-4)));
+  max-width: none;
+  height: min(600px, calc(100vh - 2 * var(--sp-5)));
+  max-height: none;
+  padding: 0;
+  border: 1px solid var(--note-edge);
+  border-radius: var(--radius-lg);
+  background: var(--note-bg);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.editor::backdrop {
+  background: rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.editor-head,
+.editor-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 7px 10px;
+}
+
+.editor-head {
+  border-bottom: 1px solid var(--note-edge);
+}
+
+.editor-foot {
+  border-top: 1px solid var(--note-edge);
+}
+
+.editor-head-spacer,
+.editor-foot-spacer {
+  flex: 1;
+  min-width: var(--sp-2);
+}
+
+/* 编辑区：CodeMirror 挂在这里，本身就是渲染结果 */
+.editor-surface-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-surface {
+  height: 100%;
+  overflow: hidden;
+}
+
+.editor-surface .cm-editor {
+  height: 100%;
+}
+
+.editor-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+/* ---------- 编辑器内的 Markdown 视觉 ---------- */
+/* 这些类由 lib/live-markdown.ts 的装饰打上，让编辑区直接呈现渲染效果 */
+
+.cm-md-h1,
+.cm-md-h2,
+.cm-md-h3,
+.cm-md-h4,
+.cm-md-h5,
+.cm-md-h6 {
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.cm-md-h1 {
+  font-size: 1.6em;
+  margin-top: 0.5em;
+}
+.cm-md-h2 {
+  font-size: 1.36em;
+  margin-top: 0.45em;
+}
+.cm-md-h3 {
+  font-size: 1.18em;
+  margin-top: 0.4em;
+}
+.cm-md-h4,
+.cm-md-h5,
+.cm-md-h6 {
+  font-size: 1.04em;
+  color: var(--text-muted);
+}
+
+.cm-md-strong {
+  font-weight: 700;
+}
+
+.cm-md-em {
+  font-style: italic;
+}
+
+.cm-md-strike {
+  text-decoration: line-through;
+  color: var(--text-faint);
+}
+
+.cm-md-code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--note-edge) 50%, transparent);
+}
+
+.cm-md-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* 无序列表的圆点 */
+.cm-md-bullet {
+  display: inline-block;
+  width: 1em;
+  color: var(--note-accent);
+  font-weight: 700;
+}
+
+.cm-md-quote {
+  padding-left: 12px;
+  border-left: 3px solid var(--note-accent);
+  color: var(--text-muted);
+}
+
+.cm-md-codeblock {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: color-mix(in srgb, var(--note-edge) 34%, transparent);
+}
+
+.cm-md-table {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+/* 任务列表复选框 */
+.cm-md-task {
+  display: inline-block;
+  position: relative;
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  margin-right: 2px;
+  border: 1.5px solid var(--note-accent);
+  border-radius: 3px;
+  cursor: pointer;
+  vertical-align: baseline;
+}
+
+.cm-md-task:hover {
+  background: color-mix(in srgb, var(--note-accent) 20%, transparent);
+}
+
+.cm-md-task.is-done {
+  background: var(--note-accent);
+}
+
+.cm-md-task.is-done::after {
+  content: "";
+  position: absolute;
+  left: 3.5px;
+  top: 1px;
+  width: 4px;
+  height: 7.5px;
+  border: solid var(--note-bg);
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(42deg);
+}
+
+.editor-meta,
+.editor-hint {
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+.editor-meta {
+  font-family: var(--font-mono);
+  padding-left: 2px;
+}
+
+.editor-warn {
+  font-size: 12.5px;
+  color: var(--warning);
+  padding-left: 2px;
+}
+
+/* 未保存标记 */
+.editor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--warning);
+  flex: none;
+}
+
+/* ---------- 标签 ---------- */
+/*
+ * 颜色由组件按标签名哈希算出 hue，通过 --tag-h 传进来。
+ * 饱和度和亮度写死，八种颜色的视觉权重才一致，不会某一个特别跳。
+ */
+.tag {
+  --tag-h: 218;
+  --tag-fg: hsl(var(--tag-h) 62% 34%);
+  --tag-bg: hsl(var(--tag-h) 82% 96%);
+  --tag-edge: hsl(var(--tag-h) 58% 86%);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  font: inherit;
+  color: var(--tag-fg);
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-edge);
+  border-radius: 999px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+[data-theme="dark"] .tag {
+  --tag-fg: hsl(var(--tag-h) 72% 76%);
+  --tag-bg: hsl(var(--tag-h) 42% 17%);
+  --tag-edge: hsl(var(--tag-h) 38% 30%);
+}
+
+.tag-md {
+  height: 24px;
+  padding: 0 9px;
+  font-size: 12.5px;
+}
+
+.tag-sm {
+  height: 20px;
+  padding: 0 7px;
+  font-size: 11.5px;
+}
+
+.tag-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tag-count {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  opacity: 0.7;
+}
+
+.tag.is-clickable {
+  cursor: pointer;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.tag.is-clickable:hover {
+  border-color: var(--tag-fg);
+}
+
+/* 选中：底色反转成实心，一眼能看出正在筛哪个 */
+.tag.is-active {
+  color: hsl(var(--tag-h) 90% 98%);
+  background: var(--tag-fg);
+  border-color: var(--tag-fg);
+}
+
+[data-theme="dark"] .tag.is-active {
+  color: hsl(var(--tag-h) 45% 12%);
+  background: var(--tag-fg);
+}
+
+.tag-x {
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  margin-right: -2px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: currentColor;
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.tag-x:hover {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.tag-x svg {
+  width: 7px;
+  height: 7px;
+}
+
+/* ---------- 标签筛选栏 ---------- */
+.tagbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tagbar-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px;
+  flex: none;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tagbar-all:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.tagbar-all.is-active {
+  color: var(--text);
+  background: var(--bg-active);
+  border-color: var(--border-strong);
+  font-weight: 550;
+}
+
+/* ---------- 卡片上的标签行 ---------- */
+.note-tags {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  padding: 0 var(--sp-3) 7px;
+  overflow: hidden;
+}
+
+.note-tags-more {
+  font-size: 11px;
+  color: var(--text-faint);
+  flex: none;
+}
+
+/* ---------- 弹窗里的标签编辑 ---------- */
+.editor-tags {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.editor-tags-icon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  color: var(--text-faint);
+  margin-right: 2px;
+}
+
+.editor-tags-full {
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+.tag-input-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.tag-input {
+  width: 96px;
+  height: 22px;
+  padding: 0 6px;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--text);
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: 999px;
+  outline: none;
+}
+
+.tag-input:focus {
+  width: 130px;
+  border-style: solid;
+  border-color: var(--accent);
+}
+
+.tag-input::placeholder {
+  color: var(--text-faint);
+}
+
+/* 补全建议 */
+.tag-suggest {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 0;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  min-width: 120px;
+  max-height: 190px;
+  overflow-y: auto;
+  padding: 4px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+}
+
+/* 只在输入框获得焦点时显示，避免一直挡着 */
+.tag-input-wrap:focus-within .tag-suggest {
+  display: flex;
+}
+
+.tag-suggest-item {
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tag-suggest-item:hover {
+  background: var(--bg-hover);
+}
+
+
+/* ---------- Markdown 渲染结果 ---------- */
+.md > :first-child {
+  margin-top: 0;
+}
+
+.md > :last-child {
+  margin-bottom: 0;
+}
+
+.md p {
+  margin: 0 0 0.55em;
+}
+
+.md h1,
+.md h2,
+.md h3,
+.md h4,
+.md h5,
+.md h6 {
+  margin: 0.7em 0 0.4em;
+  line-height: 1.35;
+  font-weight: 650;
+}
+
+.md h1 {
+  font-size: 1.32em;
+}
+.md h2 {
+  font-size: 1.18em;
+}
+.md h3 {
+  font-size: 1.06em;
+}
+.md h4,
+.md h5,
+.md h6 {
+  font-size: 1em;
+  color: var(--text-muted);
+}
+
+.md ul,
+.md ol {
+  margin: 0 0 0.55em;
+  padding-left: 1.35em;
+}
+
+.md li {
+  margin: 0.12em 0;
+}
+
+.md li > ul,
+.md li > ol {
+  margin-bottom: 0;
+}
+
+.md a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.md code {
+  font-size: 0.88em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--note-edge) 45%, transparent);
+}
+
+.md pre {
+  margin: 0 0 0.55em;
+  padding: 8px 10px;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--note-edge) 32%, transparent);
+}
+
+.md pre code {
+  padding: 0;
+  background: none;
+  font-size: 0.86em;
+  line-height: 1.5;
+}
+
+.md blockquote {
+  margin: 0 0 0.55em;
+  padding: 2px 0 2px 10px;
+  border-left: 3px solid var(--note-accent);
+  color: var(--text-muted);
+}
+
+.md blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.md hr {
+  margin: 0.8em 0;
+  border: none;
+  border-top: 1px solid var(--note-edge);
+}
+
+.md table {
+  margin: 0 0 0.55em;
+  border-collapse: collapse;
+  font-size: 0.92em;
+  display: block;
+  overflow-x: auto;
+}
+
+.md th,
+.md td {
+  padding: 3px 8px;
+  border: 1px solid var(--note-edge);
+  text-align: left;
+}
+
+.md th {
+  font-weight: 600;
+  background: color-mix(in srgb, var(--note-edge) 28%, transparent);
+}
+
+.md img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.md s {
+  color: var(--text-faint);
+}
+
+/* 任务列表 */
+.md li.task-item {
+  list-style: none;
+  margin-left: -1.15em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45em;
+}
+
+.task-box {
+  flex: none;
+  position: relative;
+  top: 0.16em;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--note-accent);
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.task-box.is-done {
+  background: var(--note-accent);
+}
+
+/* 对勾 */
+.task-box.is-done::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0.5px;
+  width: 4px;
+  height: 7px;
+  border: solid var(--note-bg);
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(42deg);
+}
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 760px) {
+  .editor-hint {
+    display: none;
+  }
+
+  .editor {
+    height: min(660px, calc(100vh - 2 * var(--sp-3)));
+  }
+
+  .editor-surface .cm-content {
+    padding: var(--sp-3) var(--sp-3) 40vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .brand-name,
+  .topbar-sep {
+    display: none;
+  }
+
+  .board {
+    --note-h: 172px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+  }
+
+  .search-wrap {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .toolbar-spacer {
+    display: none;
+  }
+
+  .note-stats {
+    display: none;
+  }
+
+  .notice {
+    font-size: 12px;
+    align-items: flex-start;
+  }
+
+  .notice svg {
+    margin-top: 3px;
+  }
+}
+

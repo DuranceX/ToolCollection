@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>便签集 — Tool Collection</title>
+    <meta name="description" content="支持 Markdown 的便签集，数据保存在浏览器本地。" />
+    <script>
+      // 在样式加载前定主题，避免刷新时闪一下白底。
+      // 没存过 = 跟随系统；存过 = 用户已经选定。
+      (function () {
+        try {
+          var s = localStorage.getItem("tc-theme");
+          var d =
+            s === "dark" ||
+            (s !== "light" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute("data-theme", d ? "dark" : "light");
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/notes/main.ts"></script>
+  </body>
+</html>

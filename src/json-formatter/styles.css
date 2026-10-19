@@ -1,0 +1,729 @@
+/* ==========================================================================
+   json-formatter
+   ========================================================================== */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+#app {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-topbar {
+  padding: 0 var(--sp-4);
+}
+
+/* ---------- 标签栏 ---------- */
+.tabbar {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  flex: none;
+  padding: 0 var(--sp-3);
+  background: var(--bg-sunken);
+  border-bottom: 1px solid var(--border);
+}
+
+.tabbar-scroll {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-top: 5px;
+}
+
+.tabbar-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-add {
+  align-self: center;
+  margin-left: 4px;
+  flex: none;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 220px;
+  height: 33px;
+  padding: 0 8px 0 11px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.tab.is-active {
+  color: var(--text);
+  background: var(--bg);
+  border-color: var(--border);
+  font-weight: 550;
+}
+
+.tab-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.tab-rename {
+  width: 110px;
+  height: 21px;
+  padding: 0 4px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg-elev);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  outline: none;
+}
+
+.tab-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--text-faint);
+}
+
+.tab-dot.is-ok {
+  background: var(--success);
+}
+
+.tab-dot.is-err {
+  background: var(--danger);
+}
+
+.tab-close {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  flex: none;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  padding: 0;
+}
+
+.tab-close:hover {
+  background: var(--bg-active);
+  color: var(--text);
+}
+
+.tab-close svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* ---------- 工具栏 ---------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+  min-width: var(--sp-2);
+}
+
+.toolbar-div {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex: none;
+}
+
+.mode-switch {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  background: var(--bg-sunken);
+  border-radius: var(--radius-sm);
+  flex: none;
+}
+
+.mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mode-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.mode-btn:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.mode-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mode-btn.is-active {
+  color: var(--text);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-sm);
+  font-weight: 550;
+}
+
+.mode-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ---------- 视图 / 面板 ---------- */
+.view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.edit-view {
+  --split: 50%;
+}
+
+.compare-view {
+  flex-direction: column;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg);
+}
+
+.panel-input {
+  width: var(--split);
+  flex: none;
+}
+
+.panel-output {
+  flex: 1;
+  border-left: 1px solid var(--border);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  height: 32px;
+  padding: 0 var(--sp-3);
+  background: var(--bg-sunken);
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-head-spacer {
+  flex: 1;
+}
+
+.panel-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.panel-meta {
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panel-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  min-height: 32px;
+  padding: 4px var(--sp-3);
+  background: var(--bg-sunken);
+  border-top: 1px solid var(--border);
+}
+
+.status-msg {
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-msg.is-err {
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.status-msg.is-err:hover {
+  text-decoration: underline;
+}
+
+.pane-empty {
+  padding: var(--sp-5);
+  color: var(--text-faint);
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+/* ---------- 分隔条 ---------- */
+.splitter {
+  width: 5px;
+  flex: none;
+  cursor: col-resize;
+  background: transparent;
+  margin: 0 -2px;
+  z-index: 5;
+  position: relative;
+}
+
+.splitter:hover,
+.splitter.is-dragging {
+  background: var(--accent);
+  opacity: 0.55;
+}
+
+/* ---------- 对比：概要条 ---------- */
+.diff-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex: none;
+  min-height: 38px;
+  padding: 4px var(--sp-4);
+  background: var(--bg-sunken);
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.diff-summary-spacer {
+  flex: 1;
+  min-width: var(--sp-3);
+}
+
+.diff-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.diff-stat::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+.diff-stat.add::before {
+  background: var(--diff-add-gutter);
+  border: 1px solid var(--success);
+}
+
+.diff-stat.del::before {
+  background: var(--diff-del-gutter);
+  border: 1px solid var(--danger);
+}
+
+.diff-stat.mod::before,
+.diff-stat.move::before {
+  background: var(--warning-soft);
+  border: 1px solid var(--warning);
+}
+
+.compare-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* ---------- 对比：两列 ---------- */
+.paired-diff {
+  min-height: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--code-size);
+  line-height: var(--code-line);
+}
+
+.diff-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-sans);
+}
+
+.diff-header-cell {
+  width: 50%;
+  padding: 5px var(--sp-3) 5px 52px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.diff-header-cell + .diff-header-cell {
+  border-left: 1px solid var(--border);
+}
+
+.diff-row {
+  display: flex;
+  align-items: stretch;
+  /* 屏幕外的行交给浏览器跳过渲染，几千行也不卡 */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 21px;
+}
+
+.diff-row:hover {
+  background: var(--bg-hover);
+}
+
+.diff-side {
+  display: flex;
+  align-items: flex-start;
+  width: 50%;
+  min-width: 0;
+}
+
+.diff-side + .diff-side {
+  border-left: 1px solid var(--border);
+}
+
+.diff-ln {
+  flex: none;
+  width: 46px;
+  padding: 0 8px 0 6px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-faint);
+  border-right: 1px solid var(--border);
+  user-select: none;
+}
+
+.diff-code {
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--sp-3);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.diff-side.is-add {
+  background: var(--diff-add-bg);
+}
+
+.diff-side.is-add .diff-ln {
+  background: var(--diff-add-gutter);
+  color: var(--success);
+}
+
+.diff-side.is-del {
+  background: var(--diff-del-bg);
+}
+
+.diff-side.is-del .diff-ln {
+  background: var(--diff-del-gutter);
+  color: var(--danger);
+}
+
+.diff-side.is-empty {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    var(--bg-sunken) 6px,
+    var(--bg-sunken) 12px
+  );
+}
+
+.diff-code mark {
+  border-radius: 2px;
+  padding: 0 1px;
+  color: inherit;
+  background: var(--diff-mark-add);
+}
+
+.diff-side.is-del .diff-code mark {
+  background: var(--diff-mark-del);
+}
+
+.diff-gap {
+  padding: 3px var(--sp-4);
+  background: var(--bg-sunken);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.diff-overflow {
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+}
+
+/* 静态高亮的 token class */
+.tk-key {
+  color: var(--tok-key);
+}
+.tk-str {
+  color: var(--tok-string);
+}
+.tk-num {
+  color: var(--tok-number);
+}
+.tk-bool {
+  color: var(--tok-boolean);
+  font-weight: 550;
+}
+.tk-null {
+  color: var(--tok-null);
+  font-style: italic;
+}
+.tk-punct {
+  color: var(--tok-punct);
+}
+
+/* ---------- 对比：变更清单 ---------- */
+.change-list {
+  padding: 0 0 var(--sp-5);
+}
+
+.change-empty {
+  padding: var(--sp-5);
+  color: var(--text-faint);
+  font-size: 13.5px;
+}
+
+.change-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.change-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  text-align: left;
+  padding: 7px var(--sp-3);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.change-table td {
+  padding: 6px var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.change-table tr:hover td {
+  background: var(--bg-hover);
+}
+
+.change-table .col-kind {
+  width: 62px;
+}
+
+.change-table .col-path {
+  width: 30%;
+  min-width: 140px;
+}
+
+.change-table .col-val {
+  width: 30%;
+}
+
+.change-table code {
+  font-size: 12.5px;
+  word-break: break-all;
+}
+
+.col-path code {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.kind-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.kind-add {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.kind-del {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.kind-mod,
+.kind-move {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.val-old {
+  color: var(--danger);
+}
+
+.val-new {
+  color: var(--success);
+}
+
+.val-move {
+  color: var(--warning);
+}
+
+.val-none {
+  color: var(--text-faint);
+}
+
+.change-more {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 860px) {
+  .brand-name,
+  .topbar-sep {
+    display: none;
+  }
+
+  /* 窄屏让工具栏换行，避免要横向滚动才能点到靠右的控件 */
+  .toolbar {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    row-gap: var(--sp-2);
+  }
+
+  .toolbar-spacer {
+    display: none;
+  }
+
+  .toolbar-div {
+    display: none;
+  }
+
+  .edit-view {
+    flex-direction: column;
+  }
+
+  .panel-input {
+    width: 100%;
+    height: 45%;
+    flex: none;
+  }
+
+  .panel-output {
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .splitter {
+    display: none;
+  }
+
+  .paired-diff {
+    font-size: 12px;
+  }
+
+  .diff-ln {
+    width: 36px;
+  }
+
+  .diff-header-cell {
+    padding-left: 42px;
+  }
+
+  .change-table .col-path {
+    width: auto;
+  }
+}
+

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSON 格式化 / 对比 — Tool Collection</title>
+    <meta name="description" content="JSON 格式化、语法高亮、多标签页与结构化差异对比。" />
+    <script>
+      // 在样式加载前定主题，避免刷新时闪一下白底。
+      // 没存过 = 跟随系统；存过 = 用户已经选定。
+      (function () {
+        try {
+          var s = localStorage.getItem("tc-theme");
+          var d =
+            s === "dark" ||
+            (s !== "light" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute("data-theme", d ? "dark" : "light");
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/json-formatter/main.ts"></script>
+  </body>
+</html>

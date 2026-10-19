@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.local
+.DS_Store
+.vite/
+
+# 编辑器
+.vscode/*
+!.vscode/extensions.json
+.idea/
