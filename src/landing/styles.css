@@ -45,8 +45,9 @@
   font-family: var(--font-mono);
 }
 
-/* ---------- 工具卡片 ---------- */
-.tool-grid {
+/* ---------- 卡片 ---------- */
+/* 工具列表和相关链接共用这一套，区别只在卡片右上的外链角标 */
+.card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--sp-4);
@@ -77,6 +78,20 @@ a.card:hover {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
+}
+
+/* 外链角标 */
+.card-ext {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  margin-left: auto;
+  align-self: flex-start;
+  color: var(--text-faint);
+}
+
+a.card:hover .card-ext {
+  color: var(--accent);
 }
 
 .card-icon {
@@ -130,49 +145,6 @@ a.card:hover {
   box-shadow: none;
 }
 
-/* ---------- 相关链接 ---------- */
-.link-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2px;
-}
-
-.link-item {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: 10px var(--sp-3);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-}
-
-.link-item:hover {
-  text-decoration: none;
-  background: var(--bg-hover);
-}
-
-.link-item .name {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.link-item .desc {
-  font-size: 12.5px;
-  color: var(--text-faint);
-  margin-left: auto;
-  padding-left: var(--sp-3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.link-item .ext {
-  width: 13px;
-  height: 13px;
-  flex: none;
-  color: var(--text-faint);
-}
-
 .site-footer {
   padding: var(--sp-5) 0 var(--sp-6);
   border-top: 1px solid var(--border);
@@ -186,8 +158,5 @@ a.card:hover {
   }
   .hero h1 {
     font-size: 27px;
-  }
-  .link-item .desc {
-    display: none;
   }
 }

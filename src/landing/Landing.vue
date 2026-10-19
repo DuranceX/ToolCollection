@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import ThemeToggle from "../shared/components/ThemeToggle.vue";
+import ItemCard from "./ItemCard.vue";
 import { tools, links } from "./data";
-
-const EXT_ICON = `<path d="M7 17 17 7M17 7H9M17 7v8"/>`;
 </script>
 
 <template>
@@ -30,34 +29,8 @@ const EXT_ICON = `<path d="M7 17 17 7M17 7H9M17 7v8"/>`;
         <span class="count">{{ tools.length }} 个</span>
       </div>
 
-      <div class="tool-grid">
-        <component
-          :is="tool.soon ? 'div' : 'a'"
-          v-for="tool in tools"
-          :key="tool.name"
-          class="card"
-          :class="{ 'card-soon': tool.soon }"
-          :href="tool.soon ? undefined : tool.href"
-        >
-          <div class="card-top">
-            <span class="card-icon" aria-hidden="true">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                v-html="tool.icon"
-              />
-            </span>
-            <h3>{{ tool.name }}</h3>
-          </div>
-          <p>{{ tool.desc }}</p>
-          <div class="card-tags">
-            <span v-for="tag in tool.tags" :key="tag" class="tag">{{ tag }}</span>
-          </div>
-        </component>
+      <div class="card-grid">
+        <ItemCard v-for="tool in tools" :key="tool.href" v-bind="tool" />
       </div>
     </section>
 
@@ -65,31 +38,11 @@ const EXT_ICON = `<path d="M7 17 17 7M17 7H9M17 7v8"/>`;
     <section class="section" aria-labelledby="links-heading">
       <div class="section-head">
         <h2 id="links-heading">相关链接</h2>
+        <span class="count">{{ links.length }} 个</span>
       </div>
 
-      <div class="link-list">
-        <a
-          v-for="link in links"
-          :key="link.href"
-          class="link-item"
-          :href="link.href"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span class="name">{{ link.name }}</span>
-          <span class="desc">{{ link.desc }}</span>
-          <svg
-            class="ext"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            v-html="EXT_ICON"
-          />
-        </a>
+      <div class="card-grid">
+        <ItemCard v-for="link in links" :key="link.href" v-bind="link" external />
       </div>
     </section>
   </main>

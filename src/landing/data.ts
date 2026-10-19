@@ -3,21 +3,22 @@
  * href 用相对路径，这样部署到子目录也不会挂。
  */
 
-export interface Tool {
+/** 卡片的公共形状：工具和相关链接共用一套样式，只差跳转方式 */
+interface CardItem {
   name: string;
   desc: string;
   href: string;
   tags: string[];
   /** 图标 SVG 的 path/内容，viewBox 统一 0 0 24 24 */
   icon: string;
+}
+
+export interface Tool extends CardItem {
   soon?: boolean;
 }
 
-export interface Link {
-  name: string;
-  desc: string;
-  href: string;
-}
+/** 站外链接。渲染成和工具一样的卡片，只是开新窗口并带外链角标 */
+export type Link = CardItem;
 
 export const tools: Tool[] = [
   {
@@ -30,9 +31,9 @@ export const tools: Tool[] = [
   },
   {
     name: "便签集",
-    desc: "随手记的便签墙，支持 Markdown 渲染、置顶、颜色标记和搜索。数据存在浏览器本地，可导出备份。",
+    desc: "随手记的便签墙，所见即所得的 Markdown 编辑，支持标签分类、置顶和搜索。数据存在浏览器本地，可导出备份。",
     href: "tools/notes/index.html",
-    tags: ["便签", "Markdown", "本地存储"],
+    tags: ["便签", "Markdown", "标签"],
     icon: `<path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l5-5V5a2 2 0 0 0-2-2Z"/>
            <path d="M15 21v-5h5"/><path d="M8 8h7M8 12h5"/>`,
   },
@@ -40,43 +41,21 @@ export const tools: Tool[] = [
 
 export const links: Link[] = [
   {
-    name: "JSON 官方介绍",
-    desc: "数据格式说明",
-    href: "https://www.json.org/json-zh.html",
+    name: "邮件服务",
+    desc: "自搭建的邮件服务，收发自有域名下的邮件。",
+    href: "https://mail.starnight.top",
+    tags: ["自建", "邮件"],
+    // 信封
+    icon: `<rect x="3" y="5" width="18" height="14" rx="2"/>
+           <path d="m3.5 6.5 7.3 5.6a2 2 0 0 0 2.4 0l7.3-5.6"/>`,
   },
   {
-    name: "RFC 8259",
-    desc: "JSON 交换格式标准",
-    href: "https://datatracker.ietf.org/doc/html/rfc8259",
-  },
-  {
-    name: "MDN · JSON",
-    desc: "JS API 参考",
-    href: "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/JSON",
-  },
-  {
-    name: "JSON Schema",
-    desc: "结构校验规范",
-    href: "https://json-schema.org/",
-  },
-  {
-    name: "JMESPath",
-    desc: "JSON 查询表达式",
-    href: "https://jmespath.org/",
-  },
-  {
-    name: "regex101",
-    desc: "正则在线调试",
-    href: "https://regex101.com/",
-  },
-  {
-    name: "Can I use",
-    desc: "浏览器兼容性查询",
-    href: "https://caniuse.com/",
-  },
-  {
-    name: "MDN Web Docs",
-    desc: "Web 技术文档",
-    href: "https://developer.mozilla.org/zh-CN/",
+    name: "文件传输",
+    desc: "自搭建的文件传输服务，在设备之间直接传文件。",
+    href: "https://file.starnight.top",
+    tags: ["自建", "文件"],
+    // 云 + 上下箭头
+    icon: `<path d="M7 18a4 4 0 0 1-.4-7.98 5.5 5.5 0 0 1 10.6-1.2A3.75 3.75 0 0 1 18 18h-1"/>
+           <path d="M12 21V11M9 14l3-3 3 3"/>`,
   },
 ];

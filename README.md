@@ -33,6 +33,8 @@ test/                         lib/diff.ts 的测试与 fuzz
 3. `vite.config.ts` 的 `build.rollupOptions.input` 加一行
 4. `src/landing/data.ts` 的 `tools` 加一张卡片
 
+首页的「工具列表」和「相关链接」共用 `ItemCard.vue`，加站外链接改 `data.ts` 的 `links` 即可，会自动开新窗口并带外链角标。
+
 主题切换和顶栏直接从 `src/shared/` 引，不用重写。新入口的 HTML 记得照抄那段内联主题脚本，否则刷新会闪一下白底。
 
 主题只有明暗两态：首次打开跟随系统，手动切过之后记住选择、不再被系统改动带走（`localStorage` 里没值 = 跟随系统）。
